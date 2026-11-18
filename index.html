@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>U Coral Beach Club - לו"ז פעילויות חי</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Rubik', sans-serif;
+      background-color: #f0f9ff;
+      color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes pulse-soft {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.85; }
+    }
+    .live-dot {
+      animation: pulse-soft 1.8s infinite;
+    }
+  </style>
+</head>
+<body class="pb-24">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-l from-cyan-600 via-teal-500 to-amber-500 text-white shadow-lg sticky top-0 z-30">
+    <div class="max-w-3xl mx-auto px-4 py-3.5">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="bg-white/20 backdrop-blur-sm text-xs font-bold px-2.5 py-0.5 rounded-full">אילת • הכול כלול</span>
+            <span class="text-xs text-white/90">15/11 - 18/11</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">U Coral Beach Club</h1>
+        </div>
+        <button id="favFilterBtn" onclick="toggleFavOnly()" class="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 active:scale-95 transition px-3 py-1.5 rounded-full text-sm font-semibold backdrop-blur-sm border border-white/30">
+          <span id="favBtnIcon">⭐</span>
+          <span>שלי (<span id="favCount">0</span>)</span>
+        </button>
+      </div>
+
+      <!-- Time Simulator Bar -->
+      <div class="mt-3 bg-black/20 backdrop-blur-md rounded-xl p-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-1.5">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 live-dot"></span>
+          <span class="font-semibold">סימולטור שעה:</span>
+        </div>
+        <div class="flex items-center gap-1.5 flex-1 justify-end">
+          <select id="simDay" onchange="renderAll()" class="bg-white text-slate-800 font-bold rounded-lg px-2 py-1 outline-none">
+            <option value="sun">יום א' (15/11)</option>
+            <option value="mon">יום ב' (16/11)</option>
+            <option value="tue">יום ג' (17/11)</option>
+            <option value="wed">יום ד' (18/11)</option>
+          </select>
+          <input type="time" id="simTime" value="11:30" onchange="renderAll()" class="bg-white text-slate-800 font-bold rounded-lg px-2 py-1 outline-none" />
+          <button onclick="setNow()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-2.5 py-1 rounded-lg transition">עכשיו</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 pt-4 space-y-6">
+
+    <!-- LIVE NOW SECTION -->
+    <section id="liveSection" class="bg-white rounded-2xl shadow-md border border-cyan-100 overflow-hidden">
+      <div class="bg-gradient-to-l from-emerald-500 to-teal-600 text-white px-4 py-2.5 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">⚡</span>
+          <h2 class="font-bold text-base">מה קורה ברגע זה במלון?</h2>
+        </div>
+        <span id="liveClockLabel" class="text-xs bg-white/20 px-2.5 py-0.5 rounded-full font-semibold"></span>
+      </div>
+
+      <div class="p-4 space-y-4">
+        <!-- Active Activities -->
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-2 flex items-center gap-1.5">
+            <span>🎭</span> פעילויות והופעות שמתקיימות עכשיו / מתחילות בקרוב
+          </h3>
+          <div id="liveActivitiesList" class="space-y-2"></div>
+        </div>
+
+        <!-- Open Facilities & Food -->
+        <div class="pt-2 border-t border-slate-100">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-2 flex items-center gap-1.5">
+            <span>🍽️</span> אוכל, ברים ומתקנים פתוחים כעת
+          </h3>
+          <div id="liveFacilitiesList" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN TABS -->
+    <div class="flex bg-white p-1 rounded-2xl shadow-sm border border-slate-200 sticky top-[116px] z-20">
+      <button onclick="switchMainTab('schedule')" id="tab-schedule" class="flex-1 py-2.5 rounded-xl font-bold text-sm transition bg-cyan-600 text-white shadow-sm">
+        📅 לו"ז יומי מלא
+      </button>
+      <button onclick="switchMainTab('food')" id="tab-food" class="flex-1 py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-slate-50">
+        🍔 אוכל וברים
+      </button>
+      <button onclick="switchMainTab('info')" id="tab-info" class="flex-1 py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-slate-50">
+        ℹ️ מידע וטלפונים
+      </button>
+    </div>
+
+    <!-- TAB 1: DAILY SCHEDULE -->
+    <div id="view-schedule" class="space-y-4">
+      <!-- Day Selector -->
+      <div class="grid grid-cols-4 gap-2">
+        <button onclick="selectDay('sun')" id="dayBtn-sun" class="day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2">
+          <div class="text-sm">ראשון</div>
+          <div class="text-xs opacity-80">15/11</div>
+        </button>
+        <button onclick="selectDay('mon')" id="dayBtn-mon" class="day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2">
+          <div class="text-sm">שני</div>
+          <div class="text-xs opacity-80">16/11</div>
+        </button>
+        <button onclick="selectDay('tue')" id="dayBtn-tue" class="day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2">
+          <div class="text-sm">שלישי</div>
+          <div class="text-xs opacity-80">17/11</div>
+        </button>
+        <button onclick="selectDay('wed')" id="dayBtn-wed" class="day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2">
+          <div class="text-sm">רביעי</div>
+          <div class="text-xs opacity-80">18/11</div>
+        </button>
+      </div>
+
+      <!-- Dress Code Banner -->
+      <div id="dressCodeBanner" class="rounded-2xl p-3.5 text-white shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center">👗</span>
+          <div>
+            <div class="text-xs opacity-90 font-medium">דרס קוד לערב (Dress Code)</div>
+            <div id="dressCodeText" class="font-extrabold text-base"></div>
+          </div>
+        </div>
+        <span id="trampolineNote" class="text-xs bg-black/20 px-2.5 py-1 rounded-lg text-right"></span>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+        <button onclick="selectCategory('all')" id="cat-all" class="cat-btn whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition">הכל</button>
+        <button onclick="selectCategory('kids')" id="cat-kids" class="cat-btn whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition">🧸 ילדים ונוער</button>
+        <button onclick="selectCategory('show')" id="cat-show" class="cat-btn whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition">🎭 הופעות וערב</button>
+        <button onclick="selectCategory('sport')" id="cat-sport" class="cat-btn whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition">🏊‍♂️ בריכה וספורט</button>
+      </div>
+
+      <!-- Activities Timeline -->
+      <div id="activitiesContainer" class="space-y-3"></div>
+    </div>
+
+    <!-- TAB 2: FOOD & BARS -->
+    <div id="view-food" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-amber-100">
+        <h3 class="font-extrabold text-lg text-amber-800 flex items-center gap-2 mb-3">
+          <span>🍽️</span> חדר אוכל מרכזי - מסעדת הריף (קומה 1-)
+        </h3>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3">
+            <div class="font-bold text-amber-950">🥐 ארוחת בוקר</div>
+            <div class="text-lg font-extrabold text-amber-700 mt-0.5">07:30 - 10:30</div>
+          </div>
+          <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3">
+            <div class="font-bold text-amber-950">🥗 ארוחת צהריים</div>
+            <div class="text-lg font-extrabold text-amber-700 mt-0.5">13:00 - 15:00</div>
+            <div class="text-xs text-slate-600 mt-1">* ביום ההגעה בלבד (לא ביום העזיבה)</div>
+          </div>
+          <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3">
+            <div class="font-bold text-amber-950">🥩 ארוחת ערב</div>
+            <div class="text-lg font-extrabold text-amber-700 mt-0.5">18:00 - 20:45</div>
+          </div>
+          <div class="bg-indigo-50/70 border border-indigo-200 rounded-xl p-3">
+            <div class="font-bold text-indigo-950">🌙 נשנושי לילה</div>
+            <div class="text-lg font-extrabold text-indigo-700 mt-0.5">23:00 - 23:45</div>
+            <div class="text-xs text-slate-600 mt-1">במרפסת חדר האוכל</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beach Restaurant -->
+      <div class="bg-gradient-to-l from-rose-500 to-orange-500 text-white rounded-2xl p-4 shadow-md">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="bg-white/20 text-xs font-bold px-2.5 py-0.5 rounded-full">בהרשמה מראש</span>
+            <h3 class="font-extrabold text-xl mt-1">🍝 מסעדת החוף UEATALY</h3>
+          </div>
+          <span class="text-3xl">🏖️</span>
+        </div>
+        <div class="mt-3 space-y-1 text-sm bg-black/15 rounded-xl p-3">
+          <div>• <strong>ימים שני - רביעי:</strong> צהריים וערב</div>
+          <div>• <strong>יום חמישי:</strong> ערב בלבד</div>
+          <div>• <strong>יום שישי:</strong> צהריים בלבד</div>
+        </div>
+        <p class="text-xs mt-2.5 text-white/95 font-medium">
+          📌 הרשמה בקבלה בימים ראשון וחמישי החל מהשעה 10:00 (על בסיס מקום פנוי).
+        </p>
+      </div>
+
+      <!-- Bars & Coffee -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-cyan-100">
+        <h3 class="font-extrabold text-lg text-cyan-900 flex items-center gap-2 mb-3">
+          <span>🍹</span> ברים, קפה ועוגה
+        </h3>
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between p-3 rounded-xl bg-cyan-50/60 border border-cyan-100">
+            <div>
+              <div class="font-bold text-slate-800">☕ קפה ועוגה</div>
+              <div class="text-xs text-slate-500">ליד הבר בלובי</div>
+            </div>
+            <span class="font-extrabold text-cyan-700 bg-white px-3 py-1 rounded-lg shadow-sm">16:00 - 17:00</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-cyan-50/60 border border-cyan-100">
+            <div>
+              <div class="font-bold text-slate-800">🍸 בר לובי</div>
+              <div class="text-xs text-slate-500">לובי המלון</div>
+            </div>
+            <span class="font-extrabold text-cyan-700 bg-white px-3 py-1 rounded-lg shadow-sm">08:30 - 23:00</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-cyan-50/60 border border-cyan-100">
+            <div>
+              <div class="font-bold text-slate-800">🥤 בר בריכה</div>
+              <div class="text-xs text-slate-500">קומה 1-</div>
+            </div>
+            <span class="font-extrabold text-cyan-700 bg-white px-3 py-1 rounded-lg shadow-sm">10:00 - 17:00</span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-cyan-50/60 border border-cyan-100">
+            <div>
+              <div class="font-bold text-slate-800">🌴 בר חוף</div>
+              <div class="text-xs text-rose-600 font-medium">סגור בימים ראשון וחמישי</div>
+            </div>
+            <span class="font-extrabold text-cyan-700 bg-white px-3 py-1 rounded-lg shadow-sm">11:00 - 16:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: HOTEL INFO & PHONES -->
+    <div id="view-info" class="hidden space-y-4">
+      <!-- WiFi Card -->
+      <div class="bg-gradient-to-l from-blue-600 to-indigo-600 text-white rounded-2xl p-4 shadow-md flex items-center justify-between">
+        <div>
+          <div class="text-xs opacity-85">רשת אלחוטית חינם במלון</div>
+          <div class="text-lg font-extrabold tracking-wide mt-0.5">FATTAL_FREE_WIFI</div>
+        </div>
+        <button onclick="copyWifi()" id="wifiBtn" class="bg-white text-indigo-700 font-bold text-xs px-3.5 py-2 rounded-xl shadow hover:bg-indigo-50 active:scale-95 transition">
+          העתק שם רשת
+        </button>
+      </div>
+
+      <!-- Facilities & Hours -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+        <h3 class="font-extrabold text-lg text-slate-800">🏊‍♂️ מתקנים, ספורט ומועדון ילדים</h3>
+        <div class="grid sm:grid-cols-2 gap-2.5 text-sm">
+          <div class="p-3 rounded-xl bg-sky-50 border border-sky-100">
+            <div class="font-bold text-sky-900">בריכה וחוף המלון</div>
+            <div class="text-sky-700 font-semibold">08:00 - 17:00 (בריכה בקומה 1-)</div>
+          </div>
+          <div class="p-3 rounded-xl bg-sky-50 border border-sky-100">
+            <div class="font-bold text-sky-900">חדר כושר</div>
+            <div class="text-sky-700 font-semibold">07:00 - 20:00 (אחרי בר הלובי)</div>
+          </div>
+          <div class="p-3 rounded-xl bg-purple-50 border border-purple-100">
+            <div class="font-bold text-purple-900">מועדון ילדים (גילאי 4-7)</div>
+            <div class="text-purple-700 font-semibold">ימים א'-ד' 09:30 - 17:00 (קומה 2-)</div>
+          </div>
+          <div class="p-3 rounded-xl bg-teal-50 border border-teal-100">
+            <div class="font-bold text-teal-900">השאלת שנורקלים וסיורים</div>
+            <div class="text-teal-700 font-semibold">09:30-12:30, 14:30-16:30 | סיורים ב-10:45 ו-15:00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Dial Numbers -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2.5">
+        <h3 class="font-extrabold text-lg text-slate-800">📞 טלפונים וזימון שירותים</h3>
+        <div class="divide-y divide-slate-100 text-sm">
+          <div class="py-2.5 flex items-center justify-between">
+            <div>
+              <div class="font-bold">קבלה / שירות לאורח (24/7)</div>
+              <div class="text-xs text-slate-500">חיוג מהחדר: 0 (בין חדרים: 2 + מס' חדר)</div>
+            </div>
+            <a href="tel:086350000" class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-lg">08-635-0000</a>
+          </div>
+          <div class="py-2.5 flex items-center justify-between">
+            <div>
+              <div class="font-bold">רגישויות מזון ואלרגיות</div>
+              <div class="text-xs text-slate-500">תיאום ישיר מול שף המלון</div>
+            </div>
+            <a href="tel:0506933856" class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-lg">050-6933856</a>
+          </div>
+          <div class="py-2.5 flex items-center justify-between">
+            <div>
+              <div class="font-bold">תיאום מגרשי טניס</div>
+              <div class="text-xs text-slate-500">מלבד יום ראשון</div>
+            </div>
+            <a href="tel:0548123880" class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-lg">054-8123880</a>
+          </div>
+          <div class="py-2.5 flex items-center justify-between">
+            <div>
+              <div class="font-bold">מספרת איתן בוגנים (קומה 1-)</div>
+              <div class="text-xs text-slate-500">א'-ה' 09:00-18:00 | ו'-שבת 16:00-20:00</div>
+            </div>
+            <a href="tel:0505999433" class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-lg">050-5999433</a>
+          </div>
+          <div class="py-2.5 flex items-center justify-between">
+            <div>
+              <div class="font-bold">SHARE SPA (קומה 2-)</div>
+              <div class="text-xs text-slate-500">תיאום והזמנות מהחדר</div>
+            </div>
+            <span class="bg-slate-100 text-slate-800 font-bold px-3 py-1.5 rounded-lg">קו פנימי 3040</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Important Notes -->
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-950 space-y-1.5">
+        <div class="font-bold text-sm mb-1">⚠️ נהלים ומידע חשוב:</div>
+        <div>• <strong>עזיבת חדרים (צ'ק אאוט):</strong> בימי חול עד השעה 11:00.</div>
+        <div>• <strong>ניקיון חדרים:</strong> מתבצע כל יום עד השעה 15:00 (מלבד יום העזיבה).</div>
+        <div>• <strong>השאלת ציוד ספורט (מיני גולף, טניס, פינג פונג):</strong> בקבלה כרוך בהשארת תעודה מזהה.</div>
+        <div>• <strong>צמידי מלון:</strong> צמיד חדש לא יינתן ללא הישן. אובדן צמיד כרוך בעלות 250 ₪.</div>
+        <div>• <strong>מפתחות שבת:</strong> ניתן להזמין בקבלה עד יום שישי ב-13:00 (פיקדון 250 ₪ באשראי).</div>
+        <div>• <strong>עישון:</strong> מותר באזורי העישון המיועדים בלבד (אין לעשן נרגילה במתחם המלון).</div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const scheduleData = {
+      sun: {
+        name: "יום ראשון (15/11)",
+        dressCode: "היפהופ 🧢👟",
+        dressColor: "from-purple-600 to-indigo-600",
+        trampoline: "טרמפולינות: 11:00-13:00, 14:00-15:30",
+        events: [
+          { id: "sun-1", start: "11:00", end: "15:30", title: "עמדת קעקועים ואיפור פנים", location: "לובי המלון", category: "kids", icon: "🎨", desc: "פעילות יצירה וצבע לילדים בלובי" },
+          { id: "sun-2", start: "12:00", end: "13:00", title: "קבלת פנים חגיגית", location: "לובי / קבלת המלון", category: "show", icon: "👋", desc: "עם צוות הבידור For U" },
+          { id: "sun-3", start: "15:00", end: "15:45", title: "שעת סיפור חווייתית", location: "לובי המלון", category: "kids", icon: "📖", desc: "סיפורים והפעלה לקטנטנים" },
+          { id: "sun-4", start: "16:00", end: "17:00", title: "ברולטה - באו לסובב את הגלגל!", location: "לובי המלון", category: "kids", icon: "🎡", desc: "משחק פרסים והפתעות לכל המשפחה" },
+          { id: "sun-5", start: "20:00", end: "21:00", title: "מופע והפעלות דיסני", location: "לובי המלון", category: "kids", icon: "✨", desc: "מסיבת דמויות ושירי דיסני לילדים" },
+          { id: "sun-6", start: "21:15", end: "22:30", title: "מופע: פיטר פן - המסע לארץ לעולם לא", location: "תיאטרון המלון", category: "show", icon: "🧚‍♂️", desc: "הפקה מוזיקלית לכל המשפחה" }
+        ]
+      },
+      mon: {
+        name: "יום שני (16/11)",
+        dressCode: "שנות ה-80 🕺🕶️",
+        dressColor: "from-pink-600 to-rose-500",
+        trampoline: "טרמפולינות: 14:00-15:00",
+        events: [
+          { id: "mon-1", start: "09:30", end: "10:30", title: "פתיחת קייטנה והרשמה + ספורט", location: "מועדון הילדים / מגרשים", category: "kids", icon: "📝", desc: "09:30 ספורט לגילאי 4-7 | 10:30 גילאי 8-11 ופינג פונג" },
+          { id: "mon-2", start: "10:30", end: "11:00", title: "קופצים לעננים + מתיחות בוקר", location: "מועדון הילדים / בריכה", category: "sport", icon: "☁️", desc: "במקביל: שיעור מתיחות בלובי/בריכה" },
+          { id: "mon-3", start: "11:00", end: "12:00", title: "סדנת הכנת עוגיות", location: "לובי המלון", category: "kids", icon: "🍪", desc: "אופים ונהנים עם צוות הבידור" },
+          { id: "mon-4", start: "12:00", end: "12:45", title: "אקווה ג'ים (התעמלות במים)", location: "בריכת המלון", category: "sport", icon: "🏊‍♀️", desc: "פעילות ספורטיבית מרעננת בבריכה" },
+          { id: "mon-5", start: "14:00", end: "15:00", title: "איפור פנים וקעקועים", location: "מועדון הילדים", category: "kids", icon: "🎨", desc: "במקביל לפתיחת הטרמפולינות" },
+          { id: "mon-6", start: "15:15", end: "16:30", title: "טורניר פינג פונג וספורט נוער", location: "מול הקבלה / מגרשים", category: "sport", icon: "🏓", desc: "15:15 פינג פונג | 15:30 ספורט גילאי 12-18" },
+          { id: "mon-7", start: "20:00", end: "21:00", title: "הפעלת המערב הפרוע", location: "לובי המלון", category: "kids", icon: "🤠", desc: "הפעלת ערב קצבית לכל המשפחה" },
+          { id: "mon-8", start: "21:15", end: "22:15", title: "מופע שנות ה-80 + מופע קסמים AVATAR", location: "תיאטרון המלון", category: "show", icon: "🎩", desc: "ערב של להיטי רטרו וקסמים על הבמה" },
+          { id: "mon-9", start: "22:15", end: "23:30", title: "מסיבת ריקודים U Dance", location: "לובי המלון", category: "show", icon: "💃", desc: "ממשיכים לרקוד לתוך הלילה" }
+        ]
+      },
+      tue: {
+        name: "יום שלישי (17/11)",
+        dressCode: "ירוק 🍀💚",
+        dressColor: "from-emerald-600 to-green-500",
+        trampoline: "טרמפולינות: 15:00-16:00",
+        events: [
+          { id: "tue-1", start: "09:30", end: "10:30", title: "פתיחת קייטנה וספורט בוקר", location: "מועדון הילדים", category: "kids", icon: "📝", desc: "היכרות ופעילות בוקר עם המדריכים" },
+          { id: "tue-2", start: "10:30", end: "11:00", title: "קופצים לעננים + מתיחות", location: "מועדון הילדים / בריכה", category: "sport", icon: "☁️", desc: "במקביל: טורניר פינג פונג מול הקבלה" },
+          { id: "tue-3", start: "11:00", end: "12:00", title: "זמן בריכה וכיף עם הקטנטנים", location: "בריכת הקטנטנים", category: "sport", icon: "💦", desc: "משחקי מים ומוזיקה בבריכה" },
+          { id: "tue-4", start: "12:15", end: "13:00", title: "ריקודי U Dance בבריכה", location: "בריכת המלון", category: "sport", icon: "🕺", desc: "מקפיצים את הבריכה עם צוות הבידור" },
+          { id: "tue-5", start: "14:00", end: "15:00", title: "משחק יו-בינגו לילדים", location: "מועדון הילדים", category: "kids", icon: "🎱", desc: "בינגו נושא פרסים לילדים" },
+          { id: "tue-6", start: "15:00", end: "16:00", title: "שעת יצירה 'פיקאסו'", location: "לובי המלון", category: "kids", icon: "🖌️", desc: "סדנת ציור ואמנות בלובי" },
+          { id: "tue-7", start: "16:00", end: "17:00", title: "גוטה - הכנת כדורי שוקולד", location: "גינת הילדים", category: "kids", icon: "🍫", desc: "סדנה מתוקה לילדים בגינה" },
+          { id: "tue-8", start: "20:00", end: "21:15", title: "תחרות הבנים נגד הבנות", location: "לובי המלון", category: "kids", icon: "🆚", desc: "הפעלת משפחות מצחיקה וסוחפת" },
+          { id: "tue-9", start: "21:30", end: "23:00", title: "ערב משחקים במגוון נושאים", location: "לובי המלון", category: "show", icon: "🎲", desc: "חידונים, תחרויות ופרסים בלובי" }
+        ]
+      },
+      wed: {
+        name: "יום רביעי (18/11)",
+        dressCode: "ג'ינס 👖💙",
+        dressColor: "from-blue-600 to-sky-500",
+        trampoline: "טרמפולינות: 12:00-12:40",
+        events: [
+          { id: "wed-1", start: "09:30", end: "10:30", title: "פתיחת קייטנה וספורט", location: "מועדון הילדים", category: "kids", icon: "📝", desc: "מתחילים את היום בכיף" },
+          { id: "wed-2", start: "10:30", end: "11:00", title: "קופצים לעננים + מתיחות", location: "מועדון הילדים / בריכה", category: "sport", icon: "☁️", desc: "במקביל: טורניר פינג פונג מול הקבלה" },
+          { id: "wed-3", start: "11:00", end: "12:00", title: "מסיבת מים ענקית!", location: "גינת הילדים", category: "kids", icon: "🌊", desc: "מלא כיף ומשחקי מים בגינת הילדים" },
+          { id: "wed-4", start: "12:15", end: "13:00", title: "ריקודי U Dance בבריכה", location: "בריכת המלון", category: "sport", icon: "💃", desc: "הרקדה תוססת על שפת הבריכה" },
+          { id: "wed-5", start: "14:30", end: "15:45", title: "חזרות למופע הילדים (הרשמה עד 15:00)", location: "תיאטרון המלון", category: "kids", icon: "🎤", desc: "הילדים מתכוננים לעלות לבמה הגדולה" },
+          { id: "wed-6", start: "16:00", end: "17:00", title: "יו קידס שואו: מופע 'SUPERHERO'", location: "תיאטרון המלון", category: "kids", icon: "🦸‍♂️", desc: "הילדים שלכם מופיעים על במת התיאטרון!" },
+          { id: "wed-7", start: "20:00", end: "21:00", title: "הפעלת 'יו הקול בראש'", location: "לובי המלון", category: "kids", icon: "🧠", desc: "הפעלת ערב צבעונית בהשראת הסרט" },
+          { id: "wed-8", start: "21:15", end: "22:15", title: "BEYOND - מופע הדגל של המלון!", location: "תיאטרון המלון", category: "show", icon: "🌟", desc: "המופע המרכזי והמושקע של צוות הבידור" },
+          { id: "wed-9", start: "22:15", end: "23:30", title: "מסיבת ריקודים U Dance", location: "לובי המלון", category: "show", icon: "🎶", desc: "מסיבת סיום הערב בלובי" }
+        ]
+      }
+    };
+
+    const facilities = [
+      { name: "🥐 ארוחת בוקר (חדר אוכל)", start: "07:30", end: "10:30", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🥗 ארוחת צהריים (חדר אוכל)", start: "13:00", end: "15:00", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🥩 ארוחת ערב (חדר אוכל)", start: "18:00", end: "20:45", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🌙 נשנושי לילה (מרפסת ח. אוכל)", start: "23:00", end: "23:45", days: ["sun", "mon", "tue", "wed"] },
+      { name: "☕ קפה ועוגה (ליד בר הלובי)", start: "16:00", end: "17:00", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🏊‍♂️ בריכה וחוף", start: "08:00", end: "17:00", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🍸 בר לובי", start: "08:30", end: "23:00", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🥤 בר בריכה", start: "10:00", end: "17:00", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🌴 בר חוף", start: "11:00", end: "16:00", days: ["mon", "tue", "wed"] },
+      { name: "🧸 מועדון ילדים (קומה 2-)", start: "09:30", end: "17:00", days: ["sun", "mon", "tue", "wed"] },
+      { name: "💪 חדר כושר", start: "07:00", end: "20:00", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🤿 שנורקלים בחוף", start: "09:30", end: "12:30", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🤿 שנורקלים בחוף", start: "14:30", end: "16:30", days: ["sun", "mon", "tue", "wed"] }
+    ];
+
+    let currentDay = "sun";
+    let currentCategory = "all";
+    let favOnly = false;
+    let favorites = JSON.parse(localStorage.getItem("coral_favs") || "[]");
+
+    function timeToMinutes(t) {
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m;
+    }
+
+    function setNow() {
+      const now = new Date();
+      const dayMap = { 0: "sun", 1: "mon", 2: "tue", 3: "wed" };
+      const d = dayMap[now.getDay()] || "sun";
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      document.getElementById("simDay").value = d;
+      document.getElementById("simTime").value = `${hh}:${mm}`;
+      selectDay(d);
+    }
+
+    function toggleFav(id) {
+      if (favorites.includes(id)) {
+        favorites = favorites.filter(f => f !== id);
+      } else {
+        favorites.push(id);
+      }
+      localStorage.setItem("coral_favs", JSON.stringify(favorites));
+      renderAll();
+    }
+
+    function toggleFavOnly() {
+      favOnly = !favOnly;
+      const btn = document.getElementById("favFilterBtn");
+      if (favOnly) {
+        btn.classList.add("bg-amber-400", "text-slate-900", "border-amber-300");
+        btn.classList.remove("bg-white/20", "text-white");
+      } else {
+        btn.classList.remove("bg-amber-400", "text-slate-900", "border-amber-300");
+        btn.classList.add("bg-white/20", "text-white");
+      }
+      renderSchedule();
+    }
+
+    function switchMainTab(tab) {
+      ["schedule", "food", "info"].forEach(t => {
+        document.getElementById(`view-${t}`).classList.toggle("hidden", t !== tab);
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          btn.classList.add("bg-cyan-600", "text-white", "shadow-sm");
+          btn.classList.remove("text-slate-600", "hover:bg-slate-50");
+        } else {
+          btn.classList.remove("bg-cyan-600", "text-white", "shadow-sm");
+          btn.classList.add("text-slate-600", "hover:bg-slate-50");
+        }
+      });
+    }
+
+    function selectDay(day) {
+      currentDay = day;
+      document.getElementById("simDay").value = day;
+      ["sun", "mon", "tue", "wed"].forEach(d => {
+        const btn = document.getElementById(`dayBtn-${d}`);
+        if (d === day) {
+          btn.className = "day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2 bg-cyan-600 text-white border-cyan-600 shadow-md";
+        } else {
+          btn.className = "day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2 bg-white text-slate-700 border-slate-200 hover:border-cyan-300";
+        }
+      });
+      renderAll();
+    }
+
+    function selectCategory(cat) {
+      currentCategory = cat;
+      ["all", "kids", "show", "sport"].forEach(c => {
+        const btn = document.getElementById(`cat-${c}`);
+        if (c === cat) {
+          btn.className = "cat-btn whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition bg-slate-800 text-white shadow-sm";
+        } else {
+          btn.className = "cat-btn whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition bg-white text-slate-600 border border-slate-200 hover:bg-slate-100";
+        }
+      });
+      renderSchedule();
+    }
+
+    function renderLive() {
+      const simDay = document.getElementById("simDay").value;
+      const simTime = document.getElementById("simTime").value || "11:30";
+      const nowMin = timeToMinutes(simTime);
+      const dayObj = scheduleData[simDay];
+
+      document.getElementById("liveClockLabel").textContent = `${dayObj.name} • ${simTime}`;
+
+      // Filter live & upcoming activities (within 60 mins)
+      const liveEvents = dayObj.events.filter(ev => {
+        const s = timeToMinutes(ev.start);
+        const e = timeToMinutes(ev.end);
+        return (nowMin >= s && nowMin < e) || (s > nowMin && s - nowMin <= 60);
+      });
+
+      const liveActContainer = document.getElementById("liveActivitiesList");
+      if (liveEvents.length === 0) {
+        liveActContainer.innerHTML = `<div class="text-xs text-slate-500 bg-slate-50 rounded-xl p-3 text-center">אין פעילויות צוות בידור בשעה זו. הציצו למטה במתקנים ובארוחות הפתוחים!</div>`;
+      } else {
+        liveActContainer.innerHTML = liveEvents.map(ev => {
+          const s = timeToMinutes(ev.start);
+          const isNow = nowMin >= s;
+          const badge = isNow
+            ? `<span class="bg-emerald-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full animate-pulse">מתקיים עכשיו!</span>`
+            : `<span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2 py-0.5 rounded-full">בעוד ${s - nowMin} דק'</span>`;
+          return `
+            <div class="flex items-center justify-between bg-gradient-to-l from-cyan-50 to-white border border-cyan-200 rounded-xl p-2.5">
+              <div class="flex items-center gap-2.5">
+                <span class="text-2xl">${ev.icon}</span>
+                <div>
+                  <div class="font-bold text-sm text-slate-900">${ev.title}</div>
+                  <div class="text-xs text-slate-600">🕒 ${ev.start}-${ev.end} • 📍 ${ev.location}</div>
+                </div>
+              </div>
+              <div>${badge}</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // Open facilities
+      const openFacs = facilities.filter(f => {
+        if (!f.days.includes(simDay)) return false;
+        const s = timeToMinutes(f.start);
+        const e = timeToMinutes(f.end);
+        return nowMin >= s && nowMin < e;
+      });
+
+      const facContainer = document.getElementById("liveFacilitiesList");
+      if (openFacs.length === 0) {
+        facContainer.innerHTML = `<span class="text-xs text-slate-500">מרבית המתקנים סגורים בשעת לילה זו.</span>`;
+      } else {
+        facContainer.innerHTML = openFacs.map(f => `
+          <span class="inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold px-2.5 py-1 rounded-lg">
+            ${f.name} <span class="text-amber-600 font-normal">(עד ${f.end})</span>
+          </span>
+        `).join("");
+      }
+    }
+
+    function renderSchedule() {
+      const dayObj = scheduleData[currentDay];
+      document.getElementById("favCount").textContent = favorites.length;
+
+      // Update Dress code banner
+      const banner = document.getElementById("dressCodeBanner");
+      banner.className = `rounded-2xl p-3.5 text-white shadow-sm flex items-center justify-between bg-gradient-to-l ${dayObj.dressColor}`;
+      document.getElementById("dressCodeText").textContent = dayObj.dressCode;
+      document.getElementById("trampolineNote").textContent = dayObj.trampoline;
+
+      // Filter events
+      let events = dayObj.events;
+      if (currentCategory !== "all") {
+        events = events.filter(e => e.category === currentCategory);
+      }
+      if (favOnly) {
+        events = events.filter(e => favorites.includes(e.id));
+      }
+
+      const container = document.getElementById("activitiesContainer");
+      if (events.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 text-center border border-slate-200">
+            <div class="text-3xl mb-2">🔍</div>
+            <div class="font-bold text-slate-700">לא נמצאו פעילויות בסינון הנוכחי</div>
+            <div class="text-xs text-slate-500 mt-1">נסו לבחור קטגוריה אחרת או לבטל את סינון המועדפים</div>
+          </div>
+        `;
+        return;
+      }
+
+      const catColors = {
+        kids: "bg-amber-100 text-amber-800 border-amber-200",
+        show: "bg-purple-100 text-purple-800 border-purple-200",
+        sport: "bg-cyan-100 text-cyan-800 border-cyan-200"
+      };
+      const catNames = {
+        kids: "ילדים ונוער",
+        show: "הופעה / ערב",
+        sport: "בריכה וספורט"
+      };
+
+      container.innerHTML = events.map(ev => {
+        const isFav = favorites.includes(ev.id);
+        return `
+          <div class="bg-white rounded-2xl p-3.5 shadow-sm border ${isFav ? 'border-amber-400 ring-1 ring-amber-300' : 'border-slate-200'} flex items-start gap-3 transition hover:shadow-md">
+            <div class="bg-slate-100 rounded-xl px-2.5 py-2 text-center min-w-[68px]">
+              <div class="font-extrabold text-sm text-slate-900">${ev.start}</div>
+              <div class="text-[11px] text-slate-500">עד ${ev.end}</div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap mb-1">
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-md border ${catColors[ev.category]}">${catNames[ev.category]}</span>
+                <span class="text-xs text-slate-500 font-medium">📍 ${ev.location}</span>
+              </div>
+              <h4 class="font-extrabold text-base text-slate-900 leading-snug">${ev.icon} ${ev.title}</h4>
+              <p class="text-xs text-slate-600 mt-1">${ev.desc}</p>
+            </div>
+            <button onclick="toggleFav('${ev.id}')" class="p-2 rounded-xl hover:bg-amber-50 active:scale-90 transition text-xl" title="הוסף למועדפים">
+              ${isFav ? '⭐' : '☆'}
+            </button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function copyWifi() {
+      navigator.clipboard.writeText("FATTAL_FREE_WIFI");
+      const btn = document.getElementById("wifiBtn");
+      btn.textContent = "הועתק! ✓";
+      setTimeout(() => btn.textContent = "העתק שם רשת", 2000);
+    }
+
+    function renderAll() {
+      renderLive();
+      renderSchedule();
+    }
+
+    // Initialize
+    selectCategory("all");
+    selectDay("sun");
+  </script>
+</body>
+</html>
