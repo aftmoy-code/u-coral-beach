@@ -55,13 +55,13 @@
           <span class="font-semibold">סימולטור שעה:</span>
         </div>
         <div class="flex items-center gap-1.5 flex-1 justify-end">
-          <select id="simDay" onchange="renderAll()" class="bg-white text-slate-800 font-bold rounded-lg px-2 py-1 outline-none">
+          <select id="simDay" onchange="syncDayFromSim()" class="bg-white text-slate-800 font-bold rounded-lg px-2 py-1 outline-none">
             <option value="sun">יום א' (15/11)</option>
             <option value="mon">יום ב' (16/11)</option>
             <option value="tue">יום ג' (17/11)</option>
             <option value="wed">יום ד' (18/11)</option>
           </select>
-          <input type="time" id="simTime" value="11:30" onchange="renderAll()" class="bg-white text-slate-800 font-bold rounded-lg px-2 py-1 outline-none" />
+          <input type="time" id="simTime" onchange="renderAll()" class="bg-white text-slate-800 font-bold rounded-lg px-2 py-1 outline-none" />
           <button onclick="setNow()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-2.5 py-1 rounded-lg transition">עכשיו</button>
         </div>
       </div>
@@ -69,6 +69,11 @@
   </header>
 
   <main class="max-w-3xl mx-auto px-4 pt-4 space-y-6">
+
+    <!-- Notice banner when current day is outside Sun-Wed -->
+    <div id="outOfRangeBanner" class="hidden bg-amber-100 border border-amber-300 text-amber-950 rounded-2xl p-3 text-xs flex items-center justify-between gap-2">
+      <span>📅 התוכנייה השבועית מעודכנת לימים <strong>ראשון–רביעי (15/11–18/11)</strong>. מוצג כעת לוח יום ראשון.</span>
+    </div>
 
     <!-- LIVE NOW SECTION -->
     <section id="liveSection" class="bg-white rounded-2xl shadow-md border border-cyan-100 overflow-hidden">
@@ -433,11 +438,26 @@
     function setNow() {
       const now = new Date();
       const dayMap = { 0: "sun", 1: "mon", 2: "tue", 3: "wed" };
-      const d = dayMap[now.getDay()] || "sun";
+      const jsDay = now.getDay();
+      const mappedDay = dayMap[jsDay];
+      const outBanner = document.getElementById("outOfRangeBanner");
+
+      if (mappedDay) {
+        outBanner.classList.add("hidden");
+      } else {
+        outBanner.classList.remove("hidden");
+      }
+
+      const d = mappedDay || "sun";
       const hh = String(now.getHours()).padStart(2, "0");
       const mm = String(now.getMinutes()).padStart(2, "0");
       document.getElementById("simDay").value = d;
       document.getElementById("simTime").value = `${hh}:${mm}`;
+      selectDay(d);
+    }
+
+    function syncDayFromSim() {
+      const d = document.getElementById("simDay").value;
       selectDay(d);
     }
 
@@ -643,9 +663,9 @@
       renderSchedule();
     }
 
-    // Initialize
+    // Initialize automatically to current device day and time
     selectCategory("all");
-    selectDay("sun");
+    setNow();
   </script>
 </body>
 </html>
