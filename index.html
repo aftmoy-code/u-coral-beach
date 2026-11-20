@@ -29,7 +29,7 @@
     }
   </style>
 </head>
-<body class="pb-24">
+<body class="pb-12">
 
   <!-- Header -->
   <header class="bg-gradient-to-l from-cyan-600 via-teal-500 to-amber-500 text-white shadow-lg sticky top-0 z-30">
@@ -38,7 +38,7 @@
         <div>
           <div class="flex items-center gap-2">
             <span class="bg-white/20 backdrop-blur-sm text-xs font-bold px-2.5 py-0.5 rounded-full">אילת • הכול כלול</span>
-            <span class="text-xs text-white/90">15/11 - 18/11</span>
+            <span class="text-xs text-white/90 font-medium">22/11 - 28/11</span>
           </div>
           <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">U Coral Beach Club</h1>
         </div>
@@ -56,10 +56,11 @@
         </div>
         <div class="flex items-center gap-1.5 flex-1 justify-end">
           <select id="simDay" onchange="syncDayFromSim()" class="bg-white text-slate-800 font-bold rounded-lg px-2 py-1 outline-none">
-            <option value="sun">יום א' (15/11)</option>
-            <option value="mon">יום ב' (16/11)</option>
-            <option value="tue">יום ג' (17/11)</option>
-            <option value="wed">יום ד' (18/11)</option>
+            <option value="sun">יום א' (22/11)</option>
+            <option value="mon">יום ב' (23/11)</option>
+            <option value="tue">יום ג' (24/11)</option>
+            <option value="wed">יום ד' (25/11)</option>
+            <option value="wknd">סופ"ש (26-28/11)</option>
           </select>
           <input type="time" id="simTime" onchange="renderAll()" class="bg-white text-slate-800 font-bold rounded-lg px-2 py-1 outline-none" />
           <button onclick="setNow()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-2.5 py-1 rounded-lg transition">עכשיו</button>
@@ -69,11 +70,6 @@
   </header>
 
   <main class="max-w-3xl mx-auto px-4 pt-4 space-y-6">
-
-    <!-- Notice banner when current day is outside Sun-Wed -->
-    <div id="outOfRangeBanner" class="hidden bg-amber-100 border border-amber-300 text-amber-950 rounded-2xl p-3 text-xs flex items-center justify-between gap-2">
-      <span>📅 התוכנייה השבועית מעודכנת לימים <strong>ראשון–רביעי (15/11–18/11)</strong>. מוצג כעת לוח יום ראשון.</span>
-    </div>
 
     <!-- LIVE NOW SECTION -->
     <section id="liveSection" class="bg-white rounded-2xl shadow-md border border-cyan-100 overflow-hidden">
@@ -120,22 +116,26 @@
     <!-- TAB 1: DAILY SCHEDULE -->
     <div id="view-schedule" class="space-y-4">
       <!-- Day Selector -->
-      <div class="grid grid-cols-4 gap-2">
-        <button onclick="selectDay('sun')" id="dayBtn-sun" class="day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2">
-          <div class="text-sm">ראשון</div>
-          <div class="text-xs opacity-80">15/11</div>
+      <div class="grid grid-cols-5 gap-1.5 sm:gap-2">
+        <button onclick="selectDay('sun')" id="dayBtn-sun" class="day-btn py-2.5 px-1 rounded-xl font-bold text-center transition border-2">
+          <div class="text-xs sm:text-sm">ראשון</div>
+          <div class="text-[11px] sm:text-xs opacity-80">22/11</div>
         </button>
-        <button onclick="selectDay('mon')" id="dayBtn-mon" class="day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2">
-          <div class="text-sm">שני</div>
-          <div class="text-xs opacity-80">16/11</div>
+        <button onclick="selectDay('mon')" id="dayBtn-mon" class="day-btn py-2.5 px-1 rounded-xl font-bold text-center transition border-2">
+          <div class="text-xs sm:text-sm">שני</div>
+          <div class="text-[11px] sm:text-xs opacity-80">23/11</div>
         </button>
-        <button onclick="selectDay('tue')" id="dayBtn-tue" class="day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2">
-          <div class="text-sm">שלישי</div>
-          <div class="text-xs opacity-80">17/11</div>
+        <button onclick="selectDay('tue')" id="dayBtn-tue" class="day-btn py-2.5 px-1 rounded-xl font-bold text-center transition border-2">
+          <div class="text-xs sm:text-sm">שלישי</div>
+          <div class="text-[11px] sm:text-xs opacity-80">24/11</div>
         </button>
-        <button onclick="selectDay('wed')" id="dayBtn-wed" class="day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2">
-          <div class="text-sm">רביעי</div>
-          <div class="text-xs opacity-80">18/11</div>
+        <button onclick="selectDay('wed')" id="dayBtn-wed" class="day-btn py-2.5 px-1 rounded-xl font-bold text-center transition border-2">
+          <div class="text-xs sm:text-sm">רביעי</div>
+          <div class="text-[11px] sm:text-xs opacity-80">25/11</div>
+        </button>
+        <button onclick="selectDay('wknd')" id="dayBtn-wknd" class="day-btn py-2.5 px-1 rounded-xl font-bold text-center transition border-2">
+          <div class="text-xs sm:text-sm">סופ"ש</div>
+          <div class="text-[11px] sm:text-xs opacity-80">26-28/11</div>
         </button>
       </div>
 
@@ -144,7 +144,7 @@
         <div class="flex items-center gap-3">
           <span class="text-2xl bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center">👗</span>
           <div>
-            <div class="text-xs opacity-90 font-medium">דרס קוד לערב (Dress Code)</div>
+            <div class="text-xs opacity-90 font-medium">דרס קוד / אווירת ערב</div>
             <div id="dressCodeText" class="font-extrabold text-base"></div>
           </div>
         </div>
@@ -152,7 +152,7 @@
       </div>
 
       <!-- Category Filter Pills -->
-      <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+      <div id="categoryFilters" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
         <button onclick="selectCategory('all')" id="cat-all" class="cat-btn whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition">הכל</button>
         <button onclick="selectCategory('kids')" id="cat-kids" class="cat-btn whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition">🧸 ילדים ונוער</button>
         <button onclick="selectCategory('show')" id="cat-show" class="cat-btn whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition">🎭 הופעות וערב</button>
@@ -338,12 +338,39 @@
       </div>
     </div>
 
+    <!-- HOTEL YOUTUBE VIDEO SECTION -->
+    <section class="bg-white rounded-2xl shadow-md border border-cyan-100 overflow-hidden">
+      <div class="bg-gradient-to-l from-cyan-700 to-teal-600 text-white px-4 py-2.5 flex items-center gap-2">
+        <span class="text-lg">🎬</span>
+        <h2 class="font-bold text-base">הכירו את מלון U Coral Beach Club אילת</h2>
+      </div>
+      <div class="p-3 sm:p-4">
+        <div class="relative w-full overflow-hidden rounded-xl shadow-inner bg-slate-900" style="padding-top: 56.25%;">
+          <iframe
+            class="absolute top-0 left-0 w-full h-full"
+            src="https://www.youtube.com/embed/O123UzQ85TQ"
+            title="U Coral Beach Club - מלון יו קורל ביץ' קלאב אילת"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </section>
+
   </main>
+
+  <!-- Footer -->
+  <footer class="max-w-3xl mx-auto px-4 mt-8 text-center">
+    <div class="border-t border-slate-200 pt-4 text-xs font-semibold text-slate-500">
+      זכויות של avtamo-code
+    </div>
+  </footer>
 
   <script>
     const scheduleData = {
       sun: {
-        name: "יום ראשון (15/11)",
+        name: "יום ראשון (22/11)",
         dressCode: "היפהופ 🧢👟",
         dressColor: "from-purple-600 to-indigo-600",
         trampoline: "טרמפולינות: 11:00-13:00, 14:00-15:30",
@@ -357,7 +384,7 @@
         ]
       },
       mon: {
-        name: "יום שני (16/11)",
+        name: "יום שני (23/11)",
         dressCode: "שנות ה-80 🕺🕶️",
         dressColor: "from-pink-600 to-rose-500",
         trampoline: "טרמפולינות: 14:00-15:00",
@@ -374,7 +401,7 @@
         ]
       },
       tue: {
-        name: "יום שלישי (17/11)",
+        name: "יום שלישי (24/11)",
         dressCode: "ירוק 🍀💚",
         dressColor: "from-emerald-600 to-green-500",
         trampoline: "טרמפולינות: 15:00-16:00",
@@ -391,7 +418,7 @@
         ]
       },
       wed: {
-        name: "יום רביעי (18/11)",
+        name: "יום רביעי (25/11)",
         dressCode: "ג'ינס 👖💙",
         dressColor: "from-blue-600 to-sky-500",
         trampoline: "טרמפולינות: 12:00-12:40",
@@ -406,21 +433,29 @@
           { id: "wed-8", start: "21:15", end: "22:15", title: "BEYOND - מופע הדגל של המלון!", location: "תיאטרון המלון", category: "show", icon: "🌟", desc: "המופע המרכזי והמושקע של צוות הבידור" },
           { id: "wed-9", start: "22:15", end: "23:30", title: "מסיבת ריקודים U Dance", location: "לובי המלון", category: "show", icon: "🎶", desc: "מסיבת סיום הערב בלובי" }
         ]
+      },
+      wknd: {
+        name: "סופשבוע (26/11 - 28/11)",
+        dressCode: "סופשבוע חגיגי במלון ✨🥂",
+        dressColor: "from-amber-500 via-orange-500 to-rose-500",
+        trampoline: "תוכנית סוף שבוע מיוחדת",
+        isWeekendSpecial: true,
+        events: []
       }
     };
 
     const facilities = [
-      { name: "🥐 ארוחת בוקר (חדר אוכל)", start: "07:30", end: "10:30", days: ["sun", "mon", "tue", "wed"] },
-      { name: "🥗 ארוחת צהריים (חדר אוכל)", start: "13:00", end: "15:00", days: ["sun", "mon", "tue", "wed"] },
-      { name: "🥩 ארוחת ערב (חדר אוכל)", start: "18:00", end: "20:45", days: ["sun", "mon", "tue", "wed"] },
-      { name: "🌙 נשנושי לילה (מרפסת ח. אוכל)", start: "23:00", end: "23:45", days: ["sun", "mon", "tue", "wed"] },
-      { name: "☕ קפה ועוגה (ליד בר הלובי)", start: "16:00", end: "17:00", days: ["sun", "mon", "tue", "wed"] },
-      { name: "🏊‍♂️ בריכה וחוף", start: "08:00", end: "17:00", days: ["sun", "mon", "tue", "wed"] },
-      { name: "🍸 בר לובי", start: "08:30", end: "23:00", days: ["sun", "mon", "tue", "wed"] },
-      { name: "🥤 בר בריכה", start: "10:00", end: "17:00", days: ["sun", "mon", "tue", "wed"] },
+      { name: "🥐 ארוחת בוקר (חדר אוכל)", start: "07:30", end: "10:30", days: ["sun", "mon", "tue", "wed", "wknd"] },
+      { name: "🥗 ארוחת צהריים (חדר אוכל)", start: "13:00", end: "15:00", days: ["sun", "mon", "tue", "wed", "wknd"] },
+      { name: "🥩 ארוחת ערב (חדר אוכל)", start: "18:00", end: "20:45", days: ["sun", "mon", "tue", "wed", "wknd"] },
+      { name: "🌙 נשנושי לילה (מרפסת ח. אוכל)", start: "23:00", end: "23:45", days: ["sun", "mon", "tue", "wed", "wknd"] },
+      { name: "☕ קפה ועוגה (ליד בר הלובי)", start: "16:00", end: "17:00", days: ["sun", "mon", "tue", "wed", "wknd"] },
+      { name: "🏊‍♂️ בריכה וחוף", start: "08:00", end: "17:00", days: ["sun", "mon", "tue", "wed", "wknd"] },
+      { name: "🍸 בר לובי", start: "08:30", end: "23:00", days: ["sun", "mon", "tue", "wed", "wknd"] },
+      { name: "🥤 בר בריכה", start: "10:00", end: "17:00", days: ["sun", "mon", "tue", "wed", "wknd"] },
       { name: "🌴 בר חוף", start: "11:00", end: "16:00", days: ["mon", "tue", "wed"] },
       { name: "🧸 מועדון ילדים (קומה 2-)", start: "09:30", end: "17:00", days: ["sun", "mon", "tue", "wed"] },
-      { name: "💪 חדר כושר", start: "07:00", end: "20:00", days: ["sun", "mon", "tue", "wed"] },
+      { name: "💪 חדר כושר", start: "07:00", end: "20:00", days: ["sun", "mon", "tue", "wed", "wknd"] },
       { name: "🤿 שנורקלים בחוף", start: "09:30", end: "12:30", days: ["sun", "mon", "tue", "wed"] },
       { name: "🤿 שנורקלים בחוף", start: "14:30", end: "16:30", days: ["sun", "mon", "tue", "wed"] }
     ];
@@ -437,18 +472,16 @@
 
     function setNow() {
       const now = new Date();
-      const dayMap = { 0: "sun", 1: "mon", 2: "tue", 3: "wed" };
-      const jsDay = now.getDay();
-      const mappedDay = dayMap[jsDay];
-      const outBanner = document.getElementById("outOfRangeBanner");
-
-      if (mappedDay) {
-        outBanner.classList.add("hidden");
-      } else {
-        outBanner.classList.remove("hidden");
-      }
-
-      const d = mappedDay || "sun";
+      const dayMap = {
+        0: "sun",
+        1: "mon",
+        2: "tue",
+        3: "wed",
+        4: "wknd",
+        5: "wknd",
+        6: "wknd"
+      };
+      const d = dayMap[now.getDay()] || "sun";
       const hh = String(now.getHours()).padStart(2, "0");
       const mm = String(now.getMinutes()).padStart(2, "0");
       document.getElementById("simDay").value = d;
@@ -501,12 +534,12 @@
     function selectDay(day) {
       currentDay = day;
       document.getElementById("simDay").value = day;
-      ["sun", "mon", "tue", "wed"].forEach(d => {
+      ["sun", "mon", "tue", "wed", "wknd"].forEach(d => {
         const btn = document.getElementById(`dayBtn-${d}`);
         if (d === day) {
-          btn.className = "day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2 bg-cyan-600 text-white border-cyan-600 shadow-md";
+          btn.className = "day-btn py-2.5 px-1 rounded-xl font-bold text-center transition border-2 bg-cyan-600 text-white border-cyan-600 shadow-md";
         } else {
-          btn.className = "day-btn py-2.5 px-2 rounded-xl font-bold text-center transition border-2 bg-white text-slate-700 border-slate-200 hover:border-cyan-300";
+          btn.className = "day-btn py-2.5 px-1 rounded-xl font-bold text-center transition border-2 bg-white text-slate-700 border-slate-200 hover:border-cyan-300";
         }
       });
       renderAll();
@@ -533,36 +566,46 @@
 
       document.getElementById("liveClockLabel").textContent = `${dayObj.name} • ${simTime}`;
 
-      // Filter live & upcoming activities (within 60 mins)
-      const liveEvents = dayObj.events.filter(ev => {
-        const s = timeToMinutes(ev.start);
-        const e = timeToMinutes(ev.end);
-        return (nowMin >= s && nowMin < e) || (s > nowMin && s - nowMin <= 60);
-      });
-
       const liveActContainer = document.getElementById("liveActivitiesList");
-      if (liveEvents.length === 0) {
-        liveActContainer.innerHTML = `<div class="text-xs text-slate-500 bg-slate-50 rounded-xl p-3 text-center">אין פעילויות צוות בידור בשעה זו. הציצו למטה במתקנים ובארוחות הפתוחים!</div>`;
+
+      if (dayObj.isWeekendSpecial) {
+        liveActContainer.innerHTML = `
+          <div class="bg-gradient-to-l from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3.5 text-center">
+            <div class="text-xl mb-1">🎉 ✨ 🎶</div>
+            <div class="font-extrabold text-sm text-amber-950">יש תוכנית מיוחדת לסופשבוע (26.11 - 28.11)</div>
+            <div class="text-xs text-amber-800 mt-1">פרטי ההופעות וההפעלות המלאים מתעדכנים בלובי המלון ובלוח המודעות.</div>
+          </div>
+        `;
       } else {
-        liveActContainer.innerHTML = liveEvents.map(ev => {
+        const liveEvents = dayObj.events.filter(ev => {
           const s = timeToMinutes(ev.start);
-          const isNow = nowMin >= s;
-          const badge = isNow
-            ? `<span class="bg-emerald-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full animate-pulse">מתקיים עכשיו!</span>`
-            : `<span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2 py-0.5 rounded-full">בעוד ${s - nowMin} דק'</span>`;
-          return `
-            <div class="flex items-center justify-between bg-gradient-to-l from-cyan-50 to-white border border-cyan-200 rounded-xl p-2.5">
-              <div class="flex items-center gap-2.5">
-                <span class="text-2xl">${ev.icon}</span>
-                <div>
-                  <div class="font-bold text-sm text-slate-900">${ev.title}</div>
-                  <div class="text-xs text-slate-600">🕒 ${ev.start}-${ev.end} • 📍 ${ev.location}</div>
+          const e = timeToMinutes(ev.end);
+          return (nowMin >= s && nowMin < e) || (s > nowMin && s - nowMin <= 60);
+        });
+
+        if (liveEvents.length === 0) {
+          liveActContainer.innerHTML = `<div class="text-xs text-slate-500 bg-slate-50 rounded-xl p-3 text-center">אין פעילויות צוות בידור בשעה זו. הציצו למטה במתקנים ובארוחות הפתוחים!</div>`;
+        } else {
+          liveActContainer.innerHTML = liveEvents.map(ev => {
+            const s = timeToMinutes(ev.start);
+            const isNow = nowMin >= s;
+            const badge = isNow
+              ? `<span class="bg-emerald-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full animate-pulse">מתקיים עכשיו!</span>`
+              : `<span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2 py-0.5 rounded-full">בעוד ${s - nowMin} דק'</span>`;
+            return `
+              <div class="flex items-center justify-between bg-gradient-to-l from-cyan-50 to-white border border-cyan-200 rounded-xl p-2.5">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-2xl">${ev.icon}</span>
+                  <div>
+                    <div class="font-bold text-sm text-slate-900">${ev.title}</div>
+                    <div class="text-xs text-slate-600">🕒 ${ev.start}-${ev.end} • 📍 ${ev.location}</div>
+                  </div>
                 </div>
+                <div>${badge}</div>
               </div>
-              <div>${badge}</div>
-            </div>
-          `;
-        }).join("");
+            `;
+          }).join("");
+        }
       }
 
       // Open facilities
@@ -595,6 +638,31 @@
       document.getElementById("dressCodeText").textContent = dayObj.dressCode;
       document.getElementById("trampolineNote").textContent = dayObj.trampoline;
 
+      const container = document.getElementById("activitiesContainer");
+      const catFilters = document.getElementById("categoryFilters");
+
+      if (dayObj.isWeekendSpecial) {
+        catFilters.classList.add("hidden");
+        container.innerHTML = `
+          <div class="bg-gradient-to-br from-amber-50 via-white to-orange-50 rounded-2xl p-6 sm:p-8 text-center border-2 border-amber-300 shadow-sm space-y-3">
+            <div class="text-4xl">🌴✨🎭🎶</div>
+            <div class="inline-block bg-amber-500 text-white text-xs font-extrabold px-3 py-1 rounded-full">
+              חמישי • שישי • שבת (26.11 - 28.11)
+            </div>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">יש תוכנית מיוחדת לסופשבוע!</h3>
+            <p class="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+              במהלך סוף השבוע מתקיימות פעילויות מיוחדות, הפעלות צוות הבידור, מופעי ערב וקבלת שבת חגיגית במלון.
+            </p>
+            <div class="pt-2 text-xs text-amber-900 font-semibold">
+              📌 התוכנייה המפורטת לסופ"ש מחולקת בקבלה ומוצגת בלובי המלון ביום חמישי בבוקר.
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      catFilters.classList.remove("hidden");
+
       // Filter events
       let events = dayObj.events;
       if (currentCategory !== "all") {
@@ -604,7 +672,6 @@
         events = events.filter(e => favorites.includes(e.id));
       }
 
-      const container = document.getElementById("activitiesContainer");
       if (events.length === 0) {
         container.innerHTML = `
           <div class="bg-white rounded-2xl p-8 text-center border border-slate-200">
